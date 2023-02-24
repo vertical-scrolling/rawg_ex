@@ -14,6 +14,7 @@ defmodule RawgEx do
   # Types
   # -------------------------------------------------------------------------------
   @type name() :: atom()
+  @type id() :: String.t()
 
   @type position() :: %{id: integer(), name: String.t(), slug: String.t()}
   @type creator() :: %{
@@ -159,7 +160,7 @@ defmodule RawgEx do
     |> parse_response()
   end
 
-  @spec get_creator(name :: name(), id :: String.t()) :: result(creator_details())
+  @spec get_creator(name :: name(), id :: id()) :: result(creator_details())
   def get_creator(name, id) do
     url = "#{@url_prefix}/creators/#{id}"
 
@@ -178,7 +179,7 @@ defmodule RawgEx do
     |> parse_response()
   end
 
-  @spec get_developer(name :: name(), id :: String.t()) :: result(developer())
+  @spec get_developer(name :: name(), id :: id()) :: result(developer())
   def get_developer(name, id) do
     url = "#{@url_prefix}/developers/#{id}"
 
@@ -197,7 +198,7 @@ defmodule RawgEx do
     |> parse_response()
   end
 
-  @spec get_game_additions(name :: name(), id :: String.t(), opts :: page_opts()) ::
+  @spec get_game_additions(name :: name(), id :: id(), opts :: page_opts()) ::
           result(page(game()))
   def get_game_additions(name, id, opts \\ []) do
     query_string = query_string(opts)
@@ -208,7 +209,7 @@ defmodule RawgEx do
     |> parse_response()
   end
 
-  @spec get_game_development_team(name :: name(), id :: String.t(), opts :: order_and_page_opts()) ::
+  @spec get_game_development_team(name :: name(), id :: id(), opts :: order_and_page_opts()) ::
           result(page(developer()))
   def get_game_development_team(name, id, opts \\ []) do
     query_string = query_string(opts)
@@ -219,11 +220,21 @@ defmodule RawgEx do
     |> parse_response()
   end
 
-  @spec get_game_series_games(name :: name(), id :: String.t(), opts :: page_opts()) ::
+  @spec get_game_series_games(name :: name(), id :: id(), opts :: page_opts()) ::
           result(page(game()))
   def get_game_series_games(name, id, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/games/#{id}/game-series?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_game_parents(name :: name(), id :: id(), opts :: page_opts()) :: result(page(game()))
+  def get_game_parents(name, id, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/games/#{id}/parent-games?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
