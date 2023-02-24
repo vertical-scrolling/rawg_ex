@@ -154,6 +154,47 @@ defmodule RawgExTest do
     end
   end
 
+  test "get games" do
+    games =
+      [
+        %{
+          id: 1,
+          slug: "slug",
+          name: "name",
+          released: "released",
+          tba: false,
+          background_image: "background_image",
+          rating: 1.0,
+          rating_top: 100,
+          ratings: %{},
+          ratings_count: 5000,
+          reviews_text_count: "reviews_text_count",
+          added: 3,
+          added_by_status: %{},
+          metacritic: 80,
+          playtime: 5,
+          suggestions_count: 5,
+          updated: "updated",
+          platforms: []
+        }
+      ]
+      |> page()
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = games |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, games} == RawgEx.get_creators(@test_name)
+    end
+  end
+
   defp page(elements),
     do: %{count: Enum.count(elements), results: elements, next: nil, previous: nil}
 end

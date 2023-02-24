@@ -37,9 +37,49 @@ defmodule RawgEx do
           games_count: non_neg_integer(),
           description: String.t()
         }
+  @type platform() :: %{}
 
-  @type start_link_opts() :: [{:name, name()}, {:pools, map()}]
   @type page_opts() :: [{:page, non_neg_integer()}, {:page_size, non_neg_integer()}]
+  @type start_link_opts() :: [{:name, name()}, {:pools, map()}]
+  @type get_games_opts() :: [
+          {:page, non_neg_integer()},
+          {:page_size, non_neg_integer()},
+          {:search, String.t()},
+          {:search_precise, boolean()},
+          {:search_exact, boolean()},
+          {:parent_platforms, String.t()},
+          {:platforms, String.t()},
+          {:stores, String.t()},
+          {:developers, String.t()},
+          {:publishers, String.t()},
+          {:genres, String.t()},
+          {:tags, String.t()},
+          {:creators, String.t()},
+          {:dates, String.t()},
+          {:updated, String.t()},
+          {:platforms_count, non_neg_integer()},
+          {:metacritic, String.t()},
+          {:exclude_collection, non_neg_integer()},
+          {:exclude_additions, boolean()},
+          {:exclude_patterns, boolean()},
+          {:exclude_game_series, boolean()},
+          {:exclude_stores, String.t()},
+          {:ordering,
+           :name
+           | :"-name"
+           | :released
+           | :"-released"
+           | :added
+           | :"-added"
+           | :created
+           | :"-created"
+           | :updated
+           | :"-updated"
+           | :rating
+           | :"-rating"
+           | :metacritic
+           | :"-metacritic"}
+        ]
 
   @type opt(t) :: nil | t
   @type page(t) :: %{
@@ -120,6 +160,45 @@ defmodule RawgEx do
   @spec get_developer(name :: name(), id :: String.t()) :: result(developer())
   def get_developer(name, id) do
     url = "#{@url_prefix}/developers/#{id}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_games(name :: name(), opts :: get_games_opts()) ::
+          result(
+            page(%{
+              id: integer(),
+              slug: String.t(),
+              name: String.t(),
+              released: String.t(),
+              tba: boolean(),
+              background_image: String.t(),
+              rating: number(),
+              rating_top: non_neg_integer(),
+              ratings: map(),
+              ratings_count: non_neg_integer(),
+              reviews_text_count: String.t(),
+              added: non_neg_integer(),
+              added_by_status: map(),
+              metacritic: non_neg_integer(),
+              playtime: non_neg_integer(),
+              suggestions_count: non_neg_integer(),
+              updated: String.t(),
+              esrb_rating: opt(%{id: integer(), slug: String.t(), name: String.t()}),
+              platforms: [
+                %{
+                  platform: platform(),
+                  released_at: opt(String.t()),
+                  requirements: opt(%{minimum: String.t(), recommended: String.t()})
+                }
+              ]
+            })
+          )
+  def get_games(name, opts) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/games?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
