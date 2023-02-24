@@ -40,6 +40,11 @@ defmodule RawgEx do
   @type platform() :: %{}
 
   @type page_opts() :: [{:page, non_neg_integer()}, {:page_size, non_neg_integer()}]
+  @type order_and_page_opts() :: [
+          {:ordering, atom()},
+          {:page, non_neg_integer()},
+          {:page_size, non_neg_integer()}
+        ]
   @type start_link_opts() :: [{:name, name()}, {:pools, map()}]
   @type get_games_opts() :: [
           {:page, non_neg_integer()},
@@ -205,7 +210,7 @@ defmodule RawgEx do
     |> parse_response()
   end
 
-  @spec get_game_additions(name :: name(), id :: String.t()) ::
+  @spec get_game_additions(name :: name(), id :: String.t(), opts :: page_opts()) ::
           result(
             page(%{
               id: integer(),
@@ -235,8 +240,29 @@ defmodule RawgEx do
               ]
             })
           )
-  def get_game_additions(name, id) do
-    url = "#{@url_prefix}/games/#{id}/additions"
+  def get_game_additions(name, id, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/games/#{id}/additions?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_game_development_team(name :: name(), id :: String.t(), opts :: order_and_page_opts()) ::
+          result(
+            page(%{
+              id: integer(),
+              name: String.t(),
+              slug: String.t(),
+              image: String.t(),
+              image_background: String.t(),
+              games_count: non_neg_integer()
+            })
+          )
+  def get_game_development_team(name, id, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/games/#{id}/development-team?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
