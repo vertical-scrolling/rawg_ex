@@ -223,6 +223,46 @@ defmodule RawgExTest do
     end
   end
 
+  test "get game series games" do
+    series_games =
+      [@example_game]
+      |> page()
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = series_games |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, series_games} == RawgEx.get_game_series_games(@test_name, "1")
+    end
+  end
+
+  test "get game parents" do
+    parents =
+      [@example_game]
+      |> page()
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = parents |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, parents} == RawgEx.get_game_parents(@test_name, "1")
+    end
+  end
+
   defp page(elements),
     do: %{count: Enum.count(elements), results: elements, next: nil, previous: nil}
 end
