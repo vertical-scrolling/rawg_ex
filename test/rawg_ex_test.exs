@@ -54,6 +54,12 @@ defmodule RawgExTest do
     width: 1920,
     height: 1080
   }
+  @example_store_link %{
+    id: 1,
+    game_id: 1,
+    store_id: 1,
+    url: "url"
+  }
 
   setup_all do
     RawgEx.start_link(name: @test_name)
@@ -286,7 +292,27 @@ defmodule RawgExTest do
            status: 200
          }}
       end do
-      assert {:ok, screenshots} == RawgEx.get_game_parents(@test_name, "1")
+      assert {:ok, screenshots} == RawgEx.get_game_screenshots(@test_name, "1")
+    end
+  end
+
+  test "get game stores" do
+    stores =
+      [@example_store_link]
+      |> page()
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = stores |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, stores} == RawgEx.get_game_stores(@test_name, "1")
     end
   end
 
