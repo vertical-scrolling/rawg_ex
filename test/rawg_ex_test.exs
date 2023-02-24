@@ -101,6 +101,34 @@ defmodule RawgExTest do
     end
   end
 
+  test "get developers" do
+    developers =
+      [
+        %{
+          id: 1,
+          name: "developer1",
+          slug: "slug",
+          image_background: "image_background",
+          games_count: 1
+        }
+      ]
+      |> page()
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = developers |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, developers} == RawgEx.get_developers(@test_name)
+    end
+  end
+
   defp page(elements),
     do: %{count: Enum.count(elements), results: elements, next: nil, previous: nil}
 end

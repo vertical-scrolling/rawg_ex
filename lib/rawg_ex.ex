@@ -31,8 +31,7 @@ defmodule RawgEx do
         }
 
   @type start_link_opts() :: [{:name, name()}, {:pools, map()}]
-  @type get_creator_roles_opts() :: [{:page, non_neg_integer()}, {:page_size, non_neg_integer()}]
-  @type get_creators_opts() :: [{:page, non_neg_integer()}, {:page_size, non_neg_integer()}]
+  @type page_opts() :: [{:page, non_neg_integer()}, {:page_size, non_neg_integer()}]
 
   @type opt(t) :: nil | t
   @type page(t) :: %{
@@ -51,8 +50,7 @@ defmodule RawgEx do
     Finch.start_link(opts)
   end
 
-  @spec get_creator_roles(name :: name(), opts :: get_creator_roles_opts()) ::
-          result(page(position()))
+  @spec get_creator_roles(name :: name(), opts :: page_opts()) :: result(page(position()))
   def get_creator_roles(name, opts \\ []) do
     api_key = Application.get_env(__MODULE__, :api_key)
     query_string = URI.encode_query([{:key, api_key} | opts])
@@ -63,7 +61,7 @@ defmodule RawgEx do
     |> parse_response()
   end
 
-  @spec get_creators(name :: name(), opts :: get_creators_opts()) ::
+  @spec get_creators(name :: name(), opts :: page_opts()) ::
           result(
             page(%{
               id: integer(),
@@ -86,6 +84,25 @@ defmodule RawgEx do
   @spec get_creator(name :: name(), id :: String.t()) :: result(creator())
   def get_creator(name, id) do
     url = "#{@url_prefix}/creator/#{id}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_developers(name :: name(), opts :: page_opts()) ::
+          result(
+            page(%{
+              id: integer(),
+              name: String.t(),
+              slug: String.t(),
+              image_background: String.t(),
+              games_count: non_neg_integer()
+            })
+          )
+  def get_developers(name, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/developers?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
