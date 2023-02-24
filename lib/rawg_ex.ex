@@ -22,6 +22,14 @@ defmodule RawgEx do
           slug: String.t(),
           image: String.t(),
           image_background: String.t(),
+          games_count: non_neg_integer()
+        }
+  @type creator_details() :: %{
+          id: integer(),
+          name: String.t(),
+          slug: String.t(),
+          image: String.t(),
+          image_background: String.t(),
           description: String.t(),
           games_count: non_neg_integer(),
           reviews_count: non_neg_integer(),
@@ -33,9 +41,36 @@ defmodule RawgEx do
           id: integer(),
           name: String.t(),
           slug: String.t(),
+          image: String.t(),
           image_background: String.t(),
-          games_count: non_neg_integer(),
-          description: String.t()
+          games_count: non_neg_integer()
+        }
+  @type game() :: %{
+          id: integer(),
+          slug: String.t(),
+          name: String.t(),
+          released: String.t(),
+          tba: boolean(),
+          background_image: String.t(),
+          rating: number(),
+          rating_top: non_neg_integer(),
+          ratings: map(),
+          ratings_count: non_neg_integer(),
+          reviews_text_count: String.t(),
+          added: non_neg_integer(),
+          added_by_status: map(),
+          metacritic: non_neg_integer(),
+          playtime: non_neg_integer(),
+          suggestions_count: non_neg_integer(),
+          updated: String.t(),
+          esrb_rating: opt(%{id: integer(), slug: String.t(), name: String.t()}),
+          platforms: [
+            %{
+              platform: platform(),
+              released_at: opt(String.t()),
+              requirements: opt(%{minimum: String.t(), recommended: String.t()})
+            }
+          ]
         }
   @type platform() :: %{}
 
@@ -114,17 +149,7 @@ defmodule RawgEx do
     |> parse_response()
   end
 
-  @spec get_creators(name :: name(), opts :: page_opts()) ::
-          result(
-            page(%{
-              id: integer(),
-              name: String.t(),
-              slug: String.t(),
-              image: String.t(),
-              image_background: String.t(),
-              games_count: non_neg_integer()
-            })
-          )
+  @spec get_creators(name :: name(), opts :: page_opts()) :: result(page(creator()))
   def get_creators(name, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/creators?#{query_string}"
@@ -134,7 +159,7 @@ defmodule RawgEx do
     |> parse_response()
   end
 
-  @spec get_creator(name :: name(), id :: String.t()) :: result(creator())
+  @spec get_creator(name :: name(), id :: String.t()) :: result(creator_details())
   def get_creator(name, id) do
     url = "#{@url_prefix}/creators/#{id}"
 
@@ -143,16 +168,7 @@ defmodule RawgEx do
     |> parse_response()
   end
 
-  @spec get_developers(name :: name(), opts :: page_opts()) ::
-          result(
-            page(%{
-              id: integer(),
-              name: String.t(),
-              slug: String.t(),
-              image_background: String.t(),
-              games_count: non_neg_integer()
-            })
-          )
+  @spec get_developers(name :: name(), opts :: page_opts()) :: result(page(developer()))
   def get_developers(name, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/developers?#{query_string}"
@@ -171,36 +187,7 @@ defmodule RawgEx do
     |> parse_response()
   end
 
-  @spec get_games(name :: name(), opts :: get_games_opts()) ::
-          result(
-            page(%{
-              id: integer(),
-              slug: String.t(),
-              name: String.t(),
-              released: String.t(),
-              tba: boolean(),
-              background_image: String.t(),
-              rating: number(),
-              rating_top: non_neg_integer(),
-              ratings: map(),
-              ratings_count: non_neg_integer(),
-              reviews_text_count: String.t(),
-              added: non_neg_integer(),
-              added_by_status: map(),
-              metacritic: non_neg_integer(),
-              playtime: non_neg_integer(),
-              suggestions_count: non_neg_integer(),
-              updated: String.t(),
-              esrb_rating: opt(%{id: integer(), slug: String.t(), name: String.t()}),
-              platforms: [
-                %{
-                  platform: platform(),
-                  released_at: opt(String.t()),
-                  requirements: opt(%{minimum: String.t(), recommended: String.t()})
-                }
-              ]
-            })
-          )
+  @spec get_games(name :: name(), opts :: get_games_opts()) :: result(page(game()))
   def get_games(name, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/games?#{query_string}"
@@ -211,35 +198,7 @@ defmodule RawgEx do
   end
 
   @spec get_game_additions(name :: name(), id :: String.t(), opts :: page_opts()) ::
-          result(
-            page(%{
-              id: integer(),
-              slug: String.t(),
-              name: String.t(),
-              released: String.t(),
-              tba: boolean(),
-              background_image: String.t(),
-              rating: number(),
-              rating_top: non_neg_integer(),
-              ratings: map(),
-              ratings_count: non_neg_integer(),
-              reviews_text_count: String.t(),
-              added: non_neg_integer(),
-              added_by_status: map(),
-              metacritic: non_neg_integer(),
-              playtime: non_neg_integer(),
-              suggestions_count: non_neg_integer(),
-              updated: String.t(),
-              esrb_rating: opt(%{id: integer(), slug: String.t(), name: String.t()}),
-              platforms: [
-                %{
-                  platform: platform(),
-                  released_at: opt(String.t()),
-                  requirements: opt(%{minimum: String.t(), recommended: String.t()})
-                }
-              ]
-            })
-          )
+          result(page(game()))
   def get_game_additions(name, id, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/games/#{id}/additions?#{query_string}"
@@ -250,19 +209,21 @@ defmodule RawgEx do
   end
 
   @spec get_game_development_team(name :: name(), id :: String.t(), opts :: order_and_page_opts()) ::
-          result(
-            page(%{
-              id: integer(),
-              name: String.t(),
-              slug: String.t(),
-              image: String.t(),
-              image_background: String.t(),
-              games_count: non_neg_integer()
-            })
-          )
+          result(page(developer()))
   def get_game_development_team(name, id, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/games/#{id}/development-team?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_game_series_games(name :: name(), id :: String.t(), opts :: page_opts()) ::
+          result(page(game()))
+  def get_game_series_games(name, id, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/games/#{id}/game-series?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)

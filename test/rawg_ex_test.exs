@@ -5,6 +5,49 @@ defmodule RawgExTest do
 
   @test_name :rawg_ex_test
 
+  @example_position %{
+    id: 1,
+    name: "position_1",
+    slug: "slug"
+  }
+  @example_creator %{
+    id: 1,
+    name: "creator1",
+    slug: "slug",
+    image: "image",
+    image_background: "image_background",
+    games_count: 1
+  }
+  @example_developer %{
+    id: 1,
+    name: "developer1",
+    slug: "slug",
+    image: "image",
+    image_background: "image_background",
+    games_count: 1,
+    description: "description"
+  }
+  @example_game %{
+    id: 1,
+    slug: "slug",
+    name: "game",
+    released: "released",
+    tba: false,
+    background_image: "background_image",
+    rating: 1.0,
+    rating_top: 100,
+    ratings: %{},
+    ratings_count: 5000,
+    reviews_text_count: "reviews_text_count",
+    added: 3,
+    added_by_status: %{},
+    metacritic: 80,
+    playtime: 5,
+    suggestions_count: 5,
+    updated: "updated",
+    platforms: []
+  }
+
   setup_all do
     RawgEx.start_link(name: @test_name)
     :ok
@@ -25,7 +68,9 @@ defmodule RawgExTest do
   end
 
   test "get creator roles" do
-    creator_roles = [%{id: 1, name: "test", slug: "test"}] |> page()
+    creator_roles =
+      [@example_position]
+      |> page()
 
     with_mock Finch, [:passthrough],
       request: fn _request, _name ->
@@ -44,16 +89,7 @@ defmodule RawgExTest do
 
   test "get creators" do
     creators =
-      [
-        %{
-          id: 1,
-          name: "creator1",
-          slug: "slug",
-          image: "image",
-          image_background: "image_background",
-          games_count: 1
-        }
-      ]
+      [@example_creator]
       |> page()
 
     with_mock Finch, [:passthrough],
@@ -72,19 +108,7 @@ defmodule RawgExTest do
   end
 
   test "get creator" do
-    creator = %{
-      id: 1,
-      name: "creator1",
-      slug: "slug",
-      image: "image",
-      image_background: "image_background",
-      description: "description",
-      games_count: 1,
-      reviews_count: 1,
-      rating: "5.6",
-      rating_top: 3,
-      updated: "updated"
-    }
+    creator = @example_creator
 
     with_mock Finch, [:passthrough],
       request: fn _request, _name ->
@@ -103,15 +127,7 @@ defmodule RawgExTest do
 
   test "get developers" do
     developers =
-      [
-        %{
-          id: 1,
-          name: "developer1",
-          slug: "slug",
-          image_background: "image_background",
-          games_count: 1
-        }
-      ]
+      [@example_developer]
       |> page()
 
     with_mock Finch, [:passthrough],
@@ -130,14 +146,7 @@ defmodule RawgExTest do
   end
 
   test "get developer" do
-    developer = %{
-      id: 1,
-      name: "developer1",
-      slug: "slug",
-      image_background: "image_background",
-      games_count: 1,
-      description: "description"
-    }
+    developer = @example_developer
 
     with_mock Finch, [:passthrough],
       request: fn _request, _name ->
@@ -156,28 +165,7 @@ defmodule RawgExTest do
 
   test "get games" do
     games =
-      [
-        %{
-          id: 1,
-          slug: "slug",
-          name: "name",
-          released: "released",
-          tba: false,
-          background_image: "background_image",
-          rating: 1.0,
-          rating_top: 100,
-          ratings: %{},
-          ratings_count: 5000,
-          reviews_text_count: "reviews_text_count",
-          added: 3,
-          added_by_status: %{},
-          metacritic: 80,
-          playtime: 5,
-          suggestions_count: 5,
-          updated: "updated",
-          platforms: []
-        }
-      ]
+      [@example_game]
       |> page()
 
     with_mock Finch, [:passthrough],
@@ -197,28 +185,7 @@ defmodule RawgExTest do
 
   test "get game additions" do
     game_additions =
-      [
-        %{
-          id: 1,
-          slug: "slug",
-          name: "name",
-          released: "released",
-          tba: false,
-          background_image: "background_image",
-          rating: 1.0,
-          rating_top: 100,
-          ratings: %{},
-          ratings_count: 5000,
-          reviews_text_count: "reviews_text_count",
-          added: 3,
-          added_by_status: %{},
-          metacritic: 80,
-          playtime: 5,
-          suggestions_count: 5,
-          updated: "updated",
-          platforms: []
-        }
-      ]
+      [@example_game]
       |> page()
 
     with_mock Finch, [:passthrough],
@@ -238,17 +205,7 @@ defmodule RawgExTest do
 
   test "get game development team" do
     development_team =
-      [
-        %{
-          id: 1,
-          name: "development_team",
-          slug: "slug",
-          image: "image",
-          image_background: "image_background",
-          games_count: 1,
-          description: "description"
-        }
-      ]
+      [@example_developer]
       |> page()
 
     with_mock Finch, [:passthrough],
