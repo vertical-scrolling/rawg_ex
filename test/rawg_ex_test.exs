@@ -5,6 +5,13 @@ defmodule RawgExTest do
 
   @test_name :rawg_ex_test
 
+  @example_achievement %{
+    id: 1,
+    name: "achievement",
+    description: "description",
+    image: "image",
+    percent: "percent"
+  }
   @example_position %{
     id: 1,
     name: "position_1",
@@ -374,6 +381,24 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, game} == RawgEx.get_game(@test_name, "1")
+    end
+  end
+
+  test "get game achievements" do
+    achievements = [@example_game_achievements]
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = achievements |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, achievements} == RawgEx.get_game(@test_name, "1")
     end
   end
 
