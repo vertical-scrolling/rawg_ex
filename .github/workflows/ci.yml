@@ -20,7 +20,7 @@ jobs:
           otp-version: ${{ env.OTP-VERSION }}
           elixir-version: ${{ env.ELIXIR-VERSION }}
       - name: Retrieve Cached Dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3.2.6
         id: mix-cache
         with:
           path: |
