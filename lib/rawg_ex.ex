@@ -8,7 +8,7 @@ defmodule RawgEx do
   # -------------------------------------------------------------------------------
   # Constants
   # -------------------------------------------------------------------------------
-  @url_prefix "https://api.rawg.io/api/"
+  @url_prefix "https://api.rawg.io/api"
 
   # -------------------------------------------------------------------------------
   # Types
@@ -22,7 +22,12 @@ defmodule RawgEx do
           slug: String.t(),
           image: String.t(),
           image_background: String.t(),
-          games_count: non_neg_integer()
+          description: String.t(),
+          games_count: non_neg_integer(),
+          reviews_count: non_neg_integer(),
+          rating: String.t(),
+          rating_top: non_neg_integer(),
+          updated: String.t()
         }
 
   @type start_link_opts() :: [{:name, name()}, {:pools, map()}]
@@ -51,17 +56,36 @@ defmodule RawgEx do
   def get_creator_roles(name, opts \\ []) do
     api_key = Application.get_env(__MODULE__, :api_key)
     query_string = URI.encode_query([{:key, api_key} | opts])
-    url = "#{@url_prefix}creator-roles?#{query_string}"
+    url = "#{@url_prefix}/creator-roles?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
     |> parse_response()
   end
 
-  @spec get_creators(name :: name(), opts :: get_creators_opts()) :: result(page(creator()))
+  @spec get_creators(name :: name(), opts :: get_creators_opts()) ::
+          result(
+            page(%{
+              id: integer(),
+              name: String.t(),
+              slug: String.t(),
+              image: String.t(),
+              image_background: String.t(),
+              games_count: non_neg_integer()
+            })
+          )
   def get_creators(name, opts \\ []) do
     query_string = query_string(opts)
-    url = "#{@url_prefix}creators?#{query_string}"
+    url = "#{@url_prefix}/creators?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_creator(name :: name(), id :: String.t()) :: result(creator())
+  def get_creator(name, id) do
+    url = "#{@url_prefix}/creator/#{id}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
