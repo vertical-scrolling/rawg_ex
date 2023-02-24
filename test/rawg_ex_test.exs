@@ -47,6 +47,13 @@ defmodule RawgExTest do
     updated: "updated",
     platforms: []
   }
+  @example_screenshot %{
+    id: 1,
+    image: "image",
+    hidden: false,
+    width: 1920,
+    height: 1080
+  }
 
   setup_all do
     RawgEx.start_link(name: @test_name)
@@ -263,6 +270,29 @@ defmodule RawgExTest do
     end
   end
 
+  test "get game screenshots" do
+    screenshots =
+      [@example_screenshot]
+      |> page()
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = screenshots |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, screenshots} == RawgEx.get_game_parents(@test_name, "1")
+    end
+  end
+
+  # -------------------------------------------------------------------------------
+  # Private functions
+  # -------------------------------------------------------------------------------
   defp page(elements),
     do: %{count: Enum.count(elements), results: elements, next: nil, previous: nil}
 end
