@@ -47,6 +47,49 @@ defmodule RawgExTest do
     updated: "updated",
     platforms: []
   }
+  @example_game_details %{
+    id: 1,
+    slug: "slug",
+    name: "name",
+    name_original: "name_original",
+    description: "description",
+    released: "released",
+    tba: false,
+    updated: "updated",
+    background_image: "background_image",
+    background_image_additional: "background_image_additional",
+    website: "website",
+    rating: 4.47,
+    rating_top: 100,
+    ratings: %{},
+    ratings_count: 5000,
+    reactions: %{},
+    added: 3,
+    added_by_status: %{},
+    metacritic: 70,
+    metacritic_platforms: [],
+    playtime: 8,
+    screenshots_count: 100,
+    movies_count: 2,
+    creators_count: 100,
+    achievements_count: 45,
+    parent_achievements_count: 50,
+    suggestions_count: 15,
+    reddit_url: "reddit_url",
+    reddit_name: "reddit_name",
+    reddit_description: "reddit_description",
+    reddit_logo: "reddit_logo",
+    reddit_count: 500,
+    twitch_count: 150,
+    youtube_count: 80,
+    reviews_text_count: "reviews_text_count",
+    alternative_names: [],
+    metacritic_url: "metacritic_url",
+    parents_count: 1,
+    additions_count: 3,
+    game_series_count: 5,
+    platforms: []
+  }
   @example_screenshot %{
     id: 1,
     image: "image",
@@ -313,6 +356,24 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, stores} == RawgEx.get_game_stores(@test_name, "1")
+    end
+  end
+
+  test "get game" do
+    game = @example_game_details
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = game |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, game} == RawgEx.get_game(@test_name, "1")
     end
   end
 
