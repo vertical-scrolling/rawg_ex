@@ -97,7 +97,7 @@ defmodule RawgExTest do
            status: 200
          }}
       end do
-      assert {:ok, creator} == RawgEx.get_creator(@test_name, 1)
+      assert {:ok, creator} == RawgEx.get_creator(@test_name, "1")
     end
   end
 
@@ -126,6 +126,31 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, developers} == RawgEx.get_developers(@test_name)
+    end
+  end
+
+  test "get developer" do
+    developer = %{
+      id: 1,
+      name: "developer1",
+      slug: "slug",
+      image_background: "image_background",
+      games_count: 1,
+      description: "description"
+    }
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = developer |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, developer} == RawgEx.get_developer(@test_name, "1")
     end
   end
 
