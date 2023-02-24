@@ -81,6 +81,12 @@ defmodule RawgEx do
           width: non_neg_integer(),
           height: non_neg_integer()
         }
+  @type store_link() :: %{
+          id: integer(),
+          game_id: String.t(),
+          store_id: String.t(),
+          url: String.t()
+        }
 
   @type page_opts() :: [{:page, non_neg_integer()}, {:page_size, non_neg_integer()}]
   @type order_and_page_opts() :: [
@@ -253,6 +259,17 @@ defmodule RawgEx do
   def get_game_screenshots(name, id, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/games/#{id}/screenshots?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_game_stores(name :: name(), id :: id(), opts :: order_and_page_opts()) ::
+          result(page(store_link()))
+  def get_game_stores(name, id, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/games/#{id}/stores?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
