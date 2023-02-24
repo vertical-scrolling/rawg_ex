@@ -29,6 +29,14 @@ defmodule RawgEx do
           rating_top: non_neg_integer(),
           updated: String.t()
         }
+  @type developer() :: %{
+          id: integer(),
+          name: String.t(),
+          slug: String.t(),
+          image_background: String.t(),
+          games_count: non_neg_integer(),
+          description: String.t()
+        }
 
   @type start_link_opts() :: [{:name, name()}, {:pools, map()}]
   @type page_opts() :: [{:page, non_neg_integer()}, {:page_size, non_neg_integer()}]
@@ -83,7 +91,7 @@ defmodule RawgEx do
 
   @spec get_creator(name :: name(), id :: String.t()) :: result(creator())
   def get_creator(name, id) do
-    url = "#{@url_prefix}/creator/#{id}"
+    url = "#{@url_prefix}/creators/#{id}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -103,6 +111,15 @@ defmodule RawgEx do
   def get_developers(name, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/developers?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_developer(name :: name(), id :: String.t()) :: result(developer())
+  def get_developer(name, id) do
+    url = "#{@url_prefix}/developers/#{id}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
