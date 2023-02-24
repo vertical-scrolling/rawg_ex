@@ -73,6 +73,56 @@ defmodule RawgEx do
             }
           ]
         }
+  @type game_details() :: %{
+          id: integer(),
+          slug: String.t(),
+          name: String.t(),
+          name_original: String.t(),
+          description: String.t(),
+          released: String.t(),
+          tba: boolean(),
+          updated: String.t(),
+          background_image: String.t(),
+          background_image_additional: String.t(),
+          website: String.t(),
+          rating: number(),
+          rating_top: non_neg_integer(),
+          ratings: map(),
+          ratings_count: non_neg_integer(),
+          reactions: map(),
+          added: non_neg_integer(),
+          added_by_status: map(),
+          metacritic: non_neg_integer(),
+          metacritic_platforms: [%{metascore: non_neg_integer(), url: String.t()}],
+          playtime: non_neg_integer(),
+          screenshots_count: non_neg_integer(),
+          movies_count: non_neg_integer(),
+          creators_count: non_neg_integer(),
+          achievements_count: non_neg_integer(),
+          parent_achievements_count: non_neg_integer(),
+          suggestions_count: non_neg_integer(),
+          reddit_url: String.t(),
+          reddit_name: String.t(),
+          reddit_description: String.t(),
+          reddit_logo: String.t(),
+          reddit_count: non_neg_integer(),
+          twitch_count: non_neg_integer(),
+          youtube_count: non_neg_integer(),
+          reviews_text_count: String.t(),
+          alternative_names: [String.t()],
+          metacritic_url: String.t(),
+          parents_count: non_neg_integer(),
+          additions_count: non_neg_integer(),
+          game_series_count: non_neg_integer(),
+          esrb_rating: opt(%{id: integer(), slug: String.t(), name: String.t()}),
+          platforms: [
+            %{
+              platform: platform(),
+              released_at: opt(String.t()),
+              requirements: opt(%{minimum: String.t(), recommended: String.t()})
+            }
+          ]
+        }
   @type platform() :: %{}
   @type screenshot() :: %{
           id: integer(),
@@ -270,6 +320,15 @@ defmodule RawgEx do
   def get_game_stores(name, id, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/games/#{id}/stores?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_game(name :: name(), id :: id()) :: result(game_details())
+  def get_game(name, id) do
+    url = "#{@url_prefix}/games/#{id}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
