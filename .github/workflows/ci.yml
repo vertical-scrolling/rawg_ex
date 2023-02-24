@@ -1,0 +1,23 @@
+name: rawg_ex ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: 25.2.3
+          elixir-version: 1.14.3
+      - run: |
+          mix deps.get
+          mix format --check-formatted
+          mix dialyzer
+          mix gradient
+          mix test
