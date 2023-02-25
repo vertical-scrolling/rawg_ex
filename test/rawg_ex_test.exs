@@ -133,6 +133,13 @@ defmodule RawgExTest do
     year_start: 2000,
     year_end: 2023
   }
+  @example_publisher %{
+    id: 1,
+    name: "name",
+    slug: "slug",
+    image_background: "image_background",
+    games_count: 10
+  }
   @example_reddit_post %{
     id: 1,
     name: "name",
@@ -648,6 +655,44 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, parents} == RawgEx.get_platforms_parents(@test_name)
+    end
+  end
+
+  test "get platform" do
+    platform = @example_platform_details
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = platform |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, platform} == RawgEx.get_platform(@test_name, "1")
+    end
+  end
+
+  test "get publishers" do
+    publishers =
+      [@example_publisher]
+      |> page()
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = publishers |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, publishers} == RawgEx.get_publishers(@test_name)
     end
   end
 

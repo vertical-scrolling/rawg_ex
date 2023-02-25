@@ -166,6 +166,13 @@ defmodule RawgEx do
           year_start: 0..32767,
           year_end: 0..32767
         }
+  @type publisher() :: %{
+          id: integer(),
+          name: String.t(),
+          slug: String.t(),
+          image_background: String.t(),
+          games_count: non_neg_integer()
+        }
   @type reddit_post() :: %{
           id: integer(),
           name: String.t(),
@@ -518,6 +525,16 @@ defmodule RawgEx do
   @spec get_platform(name :: name(), id :: id()) :: result(platform_details())
   def get_platform(name, id) do
     url = "#{@url_prefix}/platforms/#{id}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_publishers(name :: name(), opts :: page_opts()) :: result(page(publisher()))
+  def get_publishers(name, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/publishers?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
