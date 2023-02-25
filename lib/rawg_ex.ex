@@ -359,7 +359,8 @@ defmodule RawgEx do
 
   @spec get_creator(name :: name(), id :: id()) :: result(creator_details())
   def get_creator(name, id) do
-    url = "#{@url_prefix}/creators/#{id}"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/creators/#{id}?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -378,7 +379,8 @@ defmodule RawgEx do
 
   @spec get_developer(name :: name(), id :: id()) :: result(developer())
   def get_developer(name, id) do
-    url = "#{@url_prefix}/developers/#{id}"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/developers/#{id}?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -462,7 +464,8 @@ defmodule RawgEx do
 
   @spec get_game(name :: name(), id :: id()) :: result(game_details())
   def get_game(name, id) do
-    url = "#{@url_prefix}/games/#{id}"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/games/#{id}?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -471,7 +474,8 @@ defmodule RawgEx do
 
   @spec get_game_achievements(name :: name(), id :: id()) :: result([achievement()])
   def get_game_achievements(name, id) do
-    url = "#{@url_prefix}/games/#{id}/achievements"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/games/#{id}/achievements?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -480,7 +484,8 @@ defmodule RawgEx do
 
   @spec get_game_trailers(name :: name(), id :: id()) :: result([trailer()])
   def get_game_trailers(name, id) do
-    url = "#{@url_prefix}/games/#{id}/movies"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/games/#{id}/movies?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -489,7 +494,8 @@ defmodule RawgEx do
 
   @spec get_game_reddit_posts(name :: name(), id :: id()) :: result([reddit_post()])
   def get_game_reddit_posts(name, id) do
-    url = "#{@url_prefix}/games/#{id}/reddit"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/games/#{id}/reddit?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -498,7 +504,8 @@ defmodule RawgEx do
 
   @spec get_game_similars(name :: name(), id :: id()) :: result([game_details()])
   def get_game_similars(name, id) do
-    url = "#{@url_prefix}/games/#{id}/suggested"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/games/#{id}/suggested?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -507,7 +514,8 @@ defmodule RawgEx do
 
   @spec get_game_twitch_streams(name :: name(), id :: id()) :: result([twitch_stream()])
   def get_game_twitch_streams(name, id) do
-    url = "#{@url_prefix}/games/#{id}/twitch"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/games/#{id}/twitch?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -516,7 +524,8 @@ defmodule RawgEx do
 
   @spec get_game_youtube_videos(name :: name(), id :: id()) :: result([youtube_video()])
   def get_game_youtube_videos(name, id) do
-    url = "#{@url_prefix}/games/#{id}/youtube"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/games/#{id}/youtube?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -535,7 +544,8 @@ defmodule RawgEx do
 
   @spec get_genre(name :: name(), id :: id()) :: result(genre_details())
   def get_genre(name, id) do
-    url = "#{@url_prefix}/genres/#{id}"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/genres/#{id}?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -567,7 +577,8 @@ defmodule RawgEx do
 
   @spec get_platform(name :: name(), id :: id()) :: result(platform_details())
   def get_platform(name, id) do
-    url = "#{@url_prefix}/platforms/#{id}"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/platforms/#{id}?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -586,7 +597,8 @@ defmodule RawgEx do
 
   @spec get_publisher(name :: name(), id :: id()) :: result(publisher_details())
   def get_publisher(name, id) do
-    url = "#{@url_prefix}/publishers/#{id}"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/publishers/#{id}?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -605,7 +617,8 @@ defmodule RawgEx do
 
   @spec get_store(name :: name(), id :: id()) :: result(store_details())
   def get_store(name, id) do
-    url = "#{@url_prefix}/stores/#{id}"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/stores/#{id}?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
@@ -624,7 +637,8 @@ defmodule RawgEx do
 
   @spec get_tag(name :: name(), id :: id()) :: result(tag_details())
   def get_tag(name, id) do
-    url = "#{@url_prefix}/tags/#{id}"
+    query_string = query_string(name, [])
+    url = "#{@url_prefix}/tags/#{id}?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
