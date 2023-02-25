@@ -174,6 +174,15 @@ defmodule RawgExTest do
     image_background: "image_background",
     games_count: 1
   }
+  @example_store_details %{
+    id: 1,
+    name: "genre1",
+    domain: "domain",
+    slug: "slug",
+    image_background: "image_background",
+    games_count: 1,
+    description: "description"
+  }
   @example_store_link %{
     id: 1,
     game_id: 1,
@@ -747,6 +756,24 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, stores} == RawgEx.get_stores(@test_name)
+    end
+  end
+
+  test "get store" do
+    store = @example_store_details
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = store |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, store} == RawgEx.get_store(@test_name, "1")
     end
   end
 

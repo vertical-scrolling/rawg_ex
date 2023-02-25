@@ -206,6 +206,15 @@ defmodule RawgEx do
           image_background: String.t(),
           games_count: non_neg_integer()
         }
+  @type store_details() :: %{
+          id: integer(),
+          name: String.t(),
+          domain: String.t(),
+          slug: String.t(),
+          image_background: String.t(),
+          games_count: non_neg_integer(),
+          description: String.t()
+        }
   @type store_link() :: %{
           id: integer(),
           game_id: String.t(),
@@ -570,6 +579,15 @@ defmodule RawgEx do
   def get_stores(name, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/stores?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_store(name :: name(), id :: id()) :: result(store_details())
+  def get_store(name, id) do
+    url = "#{@url_prefix}/stores/#{id}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
