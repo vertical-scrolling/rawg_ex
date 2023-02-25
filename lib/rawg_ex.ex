@@ -155,6 +155,17 @@ defmodule RawgEx do
           year_start: 0..32767,
           year_end: 0..32767
         }
+  @type platform_details() :: %{
+          id: integer(),
+          name: String.t(),
+          slug: String.t(),
+          games_count: non_neg_integer(),
+          image_background: String.t(),
+          description: String.t(),
+          image: String.t(),
+          year_start: 0..32767,
+          year_end: 0..32767
+        }
   @type reddit_post() :: %{
           id: integer(),
           name: String.t(),
@@ -498,6 +509,15 @@ defmodule RawgEx do
   def get_platforms_parents(name, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/platforms/list/parents?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_platform(name :: name(), id :: id()) :: result(platform_details())
+  def get_platform(name, id) do
+    url = "#{@url_prefix}/platforms/#{id}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
