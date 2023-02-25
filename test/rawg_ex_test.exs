@@ -618,6 +618,28 @@ defmodule RawgExTest do
     end
   end
 
+  test "get platforms parents" do
+    parents =
+      [
+        %{id: 1, name: "name", slug: "slug", platforms: [@example_platform]}
+      ]
+      |> page()
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = parents |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, parents} == RawgEx.get_platforms_parents(@test_name)
+    end
+  end
+
   # -------------------------------------------------------------------------------
   # Private functions
   # -------------------------------------------------------------------------------
