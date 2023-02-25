@@ -127,6 +127,17 @@ defmodule RawgExTest do
     preview: "preview",
     data: %{}
   }
+  @example_twitch_stream %{
+    id: 1,
+    external_id: 1,
+    name: "name",
+    description: "description",
+    created: "created",
+    published: "published",
+    thumbnail: "thumbnail",
+    view_count: 100,
+    language: "language"
+  }
 
   setup_all do
     RawgEx.start_link(name: @test_name)
@@ -470,6 +481,24 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, similars} == RawgEx.get_game_similars(@test_name, "1")
+    end
+  end
+
+  test "get game twitch streams" do
+    twitch_streams = [@example_twitch_stream]
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = twitch_streams |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, twitch_streams} == RawgEx.get_game_twitch_streams(@test_name, "1")
     end
   end
 
