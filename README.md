@@ -1,5 +1,7 @@
 # RawgEx
 
+![rawgex ci](https://github.com/vertical-scrolling/rawg_ex/actions/workflows/ci.yml/badge.svg)
+
 An Elixir client for the [RAWG's Video Games Database API](https://api.rawg.io/docs/)
 
 ## Installation
@@ -16,4 +18,4 @@ end
 
 | Version | Support            |
 |---------|--------------------|
-| 0.1.0   | :white_check_mark: |
+| v1.0    | :white_check_mark: |
