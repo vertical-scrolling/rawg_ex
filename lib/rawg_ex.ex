@@ -16,6 +16,13 @@ defmodule RawgEx do
   @type name() :: atom()
   @type id() :: String.t()
 
+  @type achievement() :: %{
+          id: integer(),
+          name: String.t(),
+          description: String.t(),
+          image: String.t(),
+          percent: String.t()
+        }
   @type position() :: %{id: integer(), name: String.t(), slug: String.t()}
   @type creator() :: %{
           id: integer(),
@@ -329,6 +336,15 @@ defmodule RawgEx do
   @spec get_game(name :: name(), id :: id()) :: result(game_details())
   def get_game(name, id) do
     url = "#{@url_prefix}/games/#{id}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_game_achievements(name :: name(), id :: id()) :: result([achievement()])
+  def get_game_achievements(name, id) do
+    url = "#{@url_prefix}/games/#{id}/achievements"
 
     Finch.build(:get, url)
     |> Finch.request(name)
