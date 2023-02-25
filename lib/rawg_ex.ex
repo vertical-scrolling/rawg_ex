@@ -491,6 +491,19 @@ defmodule RawgEx do
     |> parse_response()
   end
 
+  @spec get_platforms_parents(name :: name(), opts :: order_and_page_opts()) ::
+          result(
+            page(%{id: integer(), name: String.t(), slug: String.t(), platforms: [platform()]})
+          )
+  def get_platforms_parents(name, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/platforms/list/parents?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
   # -------------------------------------------------------------------------------
   # Private functions
   # -------------------------------------------------------------------------------
