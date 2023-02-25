@@ -137,6 +137,14 @@ defmodule RawgEx do
           image_background: String.t(),
           games_count: non_neg_integer()
         }
+  @type genre_details() :: %{
+          id: integer(),
+          name: String.t(),
+          slug: String.t(),
+          image_background: String.t(),
+          games_count: non_neg_integer(),
+          description: String.t()
+        }
   @type platform() :: %{}
   @type reddit_post() :: %{
           id: integer(),
@@ -449,6 +457,15 @@ defmodule RawgEx do
   def get_genres(name, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/genres?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_genre(name :: name(), id :: id()) :: result(genre_details())
+  def get_genre(name, id) do
+    url = "#{@url_prefix}/genres/#{id}"
 
     Finch.build(:get, url)
     |> Finch.request(name)

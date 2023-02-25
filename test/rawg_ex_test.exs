@@ -102,9 +102,17 @@ defmodule RawgExTest do
     name: "genre1",
     slug: "slug",
     image_background: "image_background",
+    games_count: 1
+  }
+  @example_genre_details %{
+    id: 1,
+    name: "genre1",
+    slug: "slug",
+    image_background: "image_background",
     games_count: 1,
     description: "description"
   }
+
   @example_reddit_post %{
     id: 1,
     name: "name",
@@ -560,6 +568,24 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, genres} == RawgEx.get_genres(@test_name)
+    end
+  end
+
+  test "get genre" do
+    genre = @example_genre_details
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = genre |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, genre} == RawgEx.get_genre(@test_name, "1")
     end
   end
 
