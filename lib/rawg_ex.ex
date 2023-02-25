@@ -144,6 +144,12 @@ defmodule RawgEx do
           store_id: String.t(),
           url: String.t()
         }
+  @type trailer() :: %{
+          id: integer(),
+          name: String.t(),
+          preview: String.t(),
+          data: map()
+        }
 
   @type page_opts() :: [{:page, non_neg_integer()}, {:page_size, non_neg_integer()}]
   @type order_and_page_opts() :: [
@@ -345,6 +351,15 @@ defmodule RawgEx do
   @spec get_game_achievements(name :: name(), id :: id()) :: result([achievement()])
   def get_game_achievements(name, id) do
     url = "#{@url_prefix}/games/#{id}/achievements"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_game_trailers(name :: name(), id :: id()) :: result([trailer()])
+  def get_game_trailers(name, id) do
+    url = "#{@url_prefix}/games/#{id}/movies"
 
     Finch.build(:get, url)
     |> Finch.request(name)

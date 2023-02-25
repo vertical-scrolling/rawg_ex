@@ -110,6 +110,12 @@ defmodule RawgExTest do
     store_id: 1,
     url: "url"
   }
+  @example_trailer %{
+    id: 1,
+    name: "name",
+    preview: "preview",
+    data: %{}
+  }
 
   setup_all do
     RawgEx.start_link(name: @test_name)
@@ -385,7 +391,7 @@ defmodule RawgExTest do
   end
 
   test "get game achievements" do
-    achievements = [@example_game_achievements]
+    achievements = [@example_achievement]
 
     with_mock Finch, [:passthrough],
       request: fn _request, _name ->
@@ -398,7 +404,25 @@ defmodule RawgExTest do
            status: 200
          }}
       end do
-      assert {:ok, achievements} == RawgEx.get_game(@test_name, "1")
+      assert {:ok, achievements} == RawgEx.get_game_achievements(@test_name, "1")
+    end
+  end
+
+  test "get game trailers" do
+    trailers = [@example_trailer]
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = trailers |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, trailers} == RawgEx.get_game_trailers(@test_name, "1")
     end
   end
 
