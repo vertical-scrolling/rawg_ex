@@ -97,6 +97,14 @@ defmodule RawgExTest do
     game_series_count: 5,
     platforms: []
   }
+  @example_genre %{
+    id: 1,
+    name: "genre1",
+    slug: "slug",
+    image_background: "image_background",
+    games_count: 1,
+    description: "description"
+  }
   @example_reddit_post %{
     id: 1,
     name: "name",
@@ -532,6 +540,26 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, youtube_videos} == RawgEx.get_game_youtube_videos(@test_name, "1")
+    end
+  end
+
+  test "get genres" do
+    genres =
+      [@example_genre]
+      |> page()
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = genres |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, genres} == RawgEx.get_genres(@test_name)
     end
   end
 
