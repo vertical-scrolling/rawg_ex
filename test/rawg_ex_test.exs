@@ -197,6 +197,15 @@ defmodule RawgExTest do
     image_background: "image_background",
     games_count: 1
   }
+  @example_tag_details %{
+    id: 1,
+    name: "genre1",
+    language: "language",
+    slug: "slug",
+    image_background: "image_background",
+    games_count: 1,
+    description: "description"
+  }
   @example_trailer %{
     id: 1,
     name: "name",
@@ -802,6 +811,24 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, tags} == RawgEx.get_tags(@test_name)
+    end
+  end
+
+  test "get tag" do
+    tag = @example_tag_details
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = tag |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, tag} == RawgEx.get_tag(@test_name, "1")
     end
   end
 
