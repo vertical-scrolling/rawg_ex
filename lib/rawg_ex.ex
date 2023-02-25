@@ -277,7 +277,7 @@ defmodule RawgEx do
           {:page, non_neg_integer()},
           {:page_size, non_neg_integer()}
         ]
-  @type start_link_opts() :: [{:name, name()}, {:pools, map()}]
+  @type start_link_opts() :: [{:pools, map()}]
   @type get_games_opts() :: [
           {:page, non_neg_integer()},
           {:page_size, non_neg_integer()},
@@ -330,15 +330,16 @@ defmodule RawgEx do
   # -------------------------------------------------------------------------------
   # External API
   # -------------------------------------------------------------------------------
-  @spec start_link(opts :: start_link_opts()) :: Supervisor.on_start()
-  def start_link(opts) do
-    Finch.start_link(opts)
+  @spec start_link(name :: name(), api_key :: String.t(), opts :: start_link_opts()) ::
+          Supervisor.on_start()
+  def start_link(name, api_key, opts \\ []) do
+    :persistent_term.put({:rawg_ex, name}, api_key)
+    Finch.start_link([{:name, name} | opts])
   end
 
   @spec get_creator_roles(name :: name(), opts :: page_opts()) :: result(page(position()))
   def get_creator_roles(name, opts \\ []) do
-    api_key = Application.get_env(__MODULE__, :api_key)
-    query_string = URI.encode_query([{:key, api_key} | opts])
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/creator-roles?#{query_string}"
 
     Finch.build(:get, url)
@@ -348,7 +349,7 @@ defmodule RawgEx do
 
   @spec get_creators(name :: name(), opts :: page_opts()) :: result(page(creator()))
   def get_creators(name, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/creators?#{query_string}"
 
     Finch.build(:get, url)
@@ -367,7 +368,7 @@ defmodule RawgEx do
 
   @spec get_developers(name :: name(), opts :: page_opts()) :: result(page(developer()))
   def get_developers(name, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/developers?#{query_string}"
 
     Finch.build(:get, url)
@@ -386,7 +387,7 @@ defmodule RawgEx do
 
   @spec get_games(name :: name(), opts :: get_games_opts()) :: result(page(game()))
   def get_games(name, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/games?#{query_string}"
 
     Finch.build(:get, url)
@@ -397,7 +398,7 @@ defmodule RawgEx do
   @spec get_game_additions(name :: name(), id :: id(), opts :: page_opts()) ::
           result(page(game()))
   def get_game_additions(name, id, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/games/#{id}/additions?#{query_string}"
 
     Finch.build(:get, url)
@@ -408,7 +409,7 @@ defmodule RawgEx do
   @spec get_game_development_team(name :: name(), id :: id(), opts :: order_and_page_opts()) ::
           result(page(developer()))
   def get_game_development_team(name, id, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/games/#{id}/development-team?#{query_string}"
 
     Finch.build(:get, url)
@@ -419,7 +420,7 @@ defmodule RawgEx do
   @spec get_game_series_games(name :: name(), id :: id(), opts :: page_opts()) ::
           result(page(game()))
   def get_game_series_games(name, id, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/games/#{id}/game-series?#{query_string}"
 
     Finch.build(:get, url)
@@ -429,7 +430,7 @@ defmodule RawgEx do
 
   @spec get_game_parents(name :: name(), id :: id(), opts :: page_opts()) :: result(page(game()))
   def get_game_parents(name, id, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/games/#{id}/parent-games?#{query_string}"
 
     Finch.build(:get, url)
@@ -440,7 +441,7 @@ defmodule RawgEx do
   @spec get_game_screenshots(name :: name(), id :: id(), opts :: order_and_page_opts()) ::
           result(page(screenshot()))
   def get_game_screenshots(name, id, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/games/#{id}/screenshots?#{query_string}"
 
     Finch.build(:get, url)
@@ -451,7 +452,7 @@ defmodule RawgEx do
   @spec get_game_stores(name :: name(), id :: id(), opts :: order_and_page_opts()) ::
           result(page(store_link()))
   def get_game_stores(name, id, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/games/#{id}/stores?#{query_string}"
 
     Finch.build(:get, url)
@@ -524,7 +525,7 @@ defmodule RawgEx do
 
   @spec get_genres(name :: name(), opts :: order_and_page_opts()) :: result(page(genre()))
   def get_genres(name, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/genres?#{query_string}"
 
     Finch.build(:get, url)
@@ -543,7 +544,7 @@ defmodule RawgEx do
 
   @spec get_platforms(name :: name(), opts :: order_and_page_opts()) :: result(page(platform()))
   def get_platforms(name, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/platforms?#{query_string}"
 
     Finch.build(:get, url)
@@ -556,7 +557,7 @@ defmodule RawgEx do
             page(%{id: integer(), name: String.t(), slug: String.t(), platforms: [platform()]})
           )
   def get_platforms_parents(name, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/platforms/list/parents?#{query_string}"
 
     Finch.build(:get, url)
@@ -575,7 +576,7 @@ defmodule RawgEx do
 
   @spec get_publishers(name :: name(), opts :: page_opts()) :: result(page(publisher()))
   def get_publishers(name, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/publishers?#{query_string}"
 
     Finch.build(:get, url)
@@ -594,7 +595,7 @@ defmodule RawgEx do
 
   @spec get_stores(name :: name(), opts :: order_and_page_opts()) :: result(page(store()))
   def get_stores(name, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/stores?#{query_string}"
 
     Finch.build(:get, url)
@@ -613,7 +614,7 @@ defmodule RawgEx do
 
   @spec get_tags(name :: name(), opts :: page_opts()) :: result(page(tag()))
   def get_tags(name, opts \\ []) do
-    query_string = query_string(opts)
+    query_string = query_string(name, opts)
     url = "#{@url_prefix}/tags?#{query_string}"
 
     Finch.build(:get, url)
@@ -633,8 +634,8 @@ defmodule RawgEx do
   # -------------------------------------------------------------------------------
   # Private functions
   # -------------------------------------------------------------------------------
-  defp query_string(opts) do
-    api_key = Application.get_env(__MODULE__, :api_key)
+  defp query_string(name, opts) do
+    api_key = :persistent_term.get({:rawg_ex, name})
     URI.encode_query([{:key, api_key} | opts])
   end
 

@@ -4,6 +4,7 @@ defmodule RawgExTest do
   doctest RawgEx
 
   @test_name :rawg_ex_test
+  @test_api_key "123456789"
 
   @example_achievement %{
     id: 1,
@@ -240,7 +241,7 @@ defmodule RawgExTest do
   }
 
   setup_all do
-    RawgEx.start_link(name: @test_name)
+    RawgEx.start_link(@test_name, @test_api_key)
     :ok
   end
 
