@@ -632,6 +632,18 @@ defmodule RawgEx do
   end
 
   # -------------------------------------------------------------------------------
+  # Child spec
+  # -------------------------------------------------------------------------------
+  def child_spec([name: name, api_key: api_key] = params) do
+    opts = params |> Keyword.get(:opts, [])
+
+    %{
+      id: name,
+      start: {__MODULE__, :start_link, [name, api_key, opts]}
+    }
+  end
+
+  # -------------------------------------------------------------------------------
   # Private functions
   # -------------------------------------------------------------------------------
   defp query_string(name, opts) do
