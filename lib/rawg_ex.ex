@@ -198,6 +198,14 @@ defmodule RawgEx do
           width: non_neg_integer(),
           height: non_neg_integer()
         }
+  @type store() :: %{
+          id: integer(),
+          name: String.t(),
+          domain: String.t(),
+          slug: String.t(),
+          image_background: String.t(),
+          games_count: non_neg_integer()
+        }
   @type store_link() :: %{
           id: integer(),
           game_id: String.t(),
@@ -552,6 +560,16 @@ defmodule RawgEx do
   @spec get_publisher(name :: name(), id :: id()) :: result(publisher_details())
   def get_publisher(name, id) do
     url = "#{@url_prefix}/publishers/#{id}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_stores(name :: name(), opts :: order_and_page_opts()) :: result(page(store()))
+  def get_stores(name, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/stores?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
