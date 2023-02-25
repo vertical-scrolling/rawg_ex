@@ -130,6 +130,13 @@ defmodule RawgEx do
             }
           ]
         }
+  @type genre() :: %{
+          id: integer(),
+          name: String.t(),
+          slug: String.t(),
+          image_background: String.t(),
+          games_count: non_neg_integer()
+        }
   @type platform() :: %{}
   @type reddit_post() :: %{
           id: integer(),
@@ -432,6 +439,16 @@ defmodule RawgEx do
   @spec get_game_youtube_videos(name :: name(), id :: id()) :: result([youtube_video()])
   def get_game_youtube_videos(name, id) do
     url = "#{@url_prefix}/games/#{id}/youtube"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_genres(name :: name(), opts :: order_and_page_opts()) :: result(page(genre()))
+  def get_genres(name, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/genres?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
