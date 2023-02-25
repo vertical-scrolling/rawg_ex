@@ -112,7 +112,16 @@ defmodule RawgExTest do
     games_count: 1,
     description: "description"
   }
-
+  @example_platform %{
+    id: 1,
+    name: "name",
+    slug: "slug",
+    games_count: 10,
+    image_background: "background",
+    image: "image",
+    year_start: 2000,
+    year_end: 2023
+  }
   @example_reddit_post %{
     id: 1,
     name: "name",
@@ -586,6 +595,26 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, genre} == RawgEx.get_genre(@test_name, "1")
+    end
+  end
+
+  test "get platforms" do
+    platforms =
+      [@example_platform]
+      |> page()
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = platforms |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, platforms} == RawgEx.get_platforms(@test_name)
     end
   end
 
