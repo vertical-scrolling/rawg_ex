@@ -138,6 +138,21 @@ defmodule RawgExTest do
     view_count: 100,
     language: "language"
   }
+  @example_youtube_video %{
+    id: 1,
+    external_id: "external_id",
+    channel_id: "channel_id",
+    channel_title: "channel_title",
+    name: "name",
+    description: "description",
+    created: "created",
+    view_count: 1000,
+    comments_count: 10,
+    like_count: 400,
+    dislike_count: 13,
+    favorite_count: 100,
+    thumbnails: %{}
+  }
 
   setup_all do
     RawgEx.start_link(name: @test_name)
@@ -499,6 +514,24 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, twitch_streams} == RawgEx.get_game_twitch_streams(@test_name, "1")
+    end
+  end
+
+  test "get game youtube videos" do
+    youtube_videos = [@example_youtube_video]
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = youtube_videos |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, youtube_videos} == RawgEx.get_game_youtube_videos(@test_name, "1")
     end
   end
 
