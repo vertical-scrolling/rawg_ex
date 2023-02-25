@@ -145,7 +145,16 @@ defmodule RawgEx do
           games_count: non_neg_integer(),
           description: String.t()
         }
-  @type platform() :: %{}
+  @type platform() :: %{
+          id: integer(),
+          name: String.t(),
+          slug: String.t(),
+          games_count: non_neg_integer(),
+          image_background: String.t(),
+          image: String.t(),
+          year_start: 0..32767,
+          year_end: 0..32767
+        }
   @type reddit_post() :: %{
           id: integer(),
           name: String.t(),
@@ -466,6 +475,16 @@ defmodule RawgEx do
   @spec get_genre(name :: name(), id :: id()) :: result(genre_details())
   def get_genre(name, id) do
     url = "#{@url_prefix}/genres/#{id}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_platforms(name :: name(), opts :: order_and_page_opts()) :: result(page(platform()))
+  def get_platforms(name, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/platforms?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
