@@ -229,6 +229,15 @@ defmodule RawgEx do
           image_background: String.t(),
           games_count: non_neg_integer()
         }
+  @type tag_details() :: %{
+          id: integer(),
+          name: String.t(),
+          language: String.t(),
+          slug: String.t(),
+          image_background: String.t(),
+          games_count: non_neg_integer(),
+          description: String.t()
+        }
   @type trailer() :: %{
           id: integer(),
           name: String.t(),
@@ -606,6 +615,15 @@ defmodule RawgEx do
   def get_tags(name, opts \\ []) do
     query_string = query_string(opts)
     url = "#{@url_prefix}/tags?#{query_string}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_tag(name :: name(), id :: id()) :: result(tag_details())
+  def get_tag(name, id) do
+    url = "#{@url_prefix}/tags/#{id}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
