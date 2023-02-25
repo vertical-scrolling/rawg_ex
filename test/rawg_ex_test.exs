@@ -140,6 +140,14 @@ defmodule RawgExTest do
     image_background: "image_background",
     games_count: 10
   }
+  @example_publisher_details %{
+    id: 1,
+    name: "name",
+    slug: "slug",
+    image_background: "image_background",
+    games_count: 10,
+    description: "description"
+  }
   @example_reddit_post %{
     id: 1,
     name: "name",
@@ -693,6 +701,24 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, publishers} == RawgEx.get_publishers(@test_name)
+    end
+  end
+
+  test "get publisher" do
+    publisher = @example_publisher_details
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = publisher |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, publisher} == RawgEx.get_publisher(@test_name, "1")
     end
   end
 
