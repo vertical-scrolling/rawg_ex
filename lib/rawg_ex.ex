@@ -171,6 +171,21 @@ defmodule RawgEx do
           view_count: non_neg_integer(),
           language: String.t()
         }
+  @type youtube_video() :: %{
+          id: integer(),
+          external_id: String.t(),
+          channel_id: String.t(),
+          channel_title: String.t(),
+          name: String.t(),
+          description: String.t(),
+          created: String.t(),
+          view_count: non_neg_integer(),
+          comments_count: non_neg_integer(),
+          like_count: non_neg_integer(),
+          dislike_count: non_neg_integer(),
+          favorite_count: non_neg_integer(),
+          thumbnails: %{}
+        }
 
   @type page_opts() :: [{:page, non_neg_integer()}, {:page_size, non_neg_integer()}]
   @type order_and_page_opts() :: [
@@ -408,6 +423,15 @@ defmodule RawgEx do
   @spec get_game_twitch_streams(name :: name(), id :: id()) :: result([twitch_stream()])
   def get_game_twitch_streams(name, id) do
     url = "#{@url_prefix}/games/#{id}/twitch"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_game_youtube_videos(name :: name(), id :: id()) :: result([youtube_video()])
+  def get_game_youtube_videos(name, id) do
+    url = "#{@url_prefix}/games/#{id}/youtube"
 
     Finch.build(:get, url)
     |> Finch.request(name)
