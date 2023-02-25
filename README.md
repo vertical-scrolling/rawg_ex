@@ -16,4 +16,4 @@ end
 
 | Version | Support            |
 |---------|--------------------|
-| v1.0    | :white_check_mark: |
+| 0.1.0   | :white_check_mark: |
