@@ -160,6 +160,17 @@ defmodule RawgEx do
           preview: String.t(),
           data: map()
         }
+  @type twitch_stream() :: %{
+          id: integer(),
+          external_id: integer(),
+          name: String.t(),
+          description: String.t(),
+          created: String.t(),
+          published: String.t(),
+          thumbnail: String.t(),
+          view_count: non_neg_integer(),
+          language: String.t()
+        }
 
   @type page_opts() :: [{:page, non_neg_integer()}, {:page_size, non_neg_integer()}]
   @type order_and_page_opts() :: [
@@ -388,6 +399,15 @@ defmodule RawgEx do
   @spec get_game_similars(name :: name(), id :: id()) :: result([game_details()])
   def get_game_similars(name, id) do
     url = "#{@url_prefix}/games/#{id}/suggested"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_game_twitch_streams(name :: name(), id :: id()) :: result([twitch_stream()])
+  def get_game_twitch_streams(name, id) do
+    url = "#{@url_prefix}/games/#{id}/twitch"
 
     Finch.build(:get, url)
     |> Finch.request(name)
