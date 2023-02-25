@@ -385,6 +385,15 @@ defmodule RawgEx do
     |> parse_response()
   end
 
+  @spec get_game_similars(name :: name(), id :: id()) :: result([game_details()])
+  def get_game_similars(name, id) do
+    url = "#{@url_prefix}/games/#{id}/suggested"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
   # -------------------------------------------------------------------------------
   # Private functions
   # -------------------------------------------------------------------------------
