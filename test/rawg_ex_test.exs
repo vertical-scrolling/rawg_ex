@@ -455,6 +455,24 @@ defmodule RawgExTest do
     end
   end
 
+  test "get game similars" do
+    similars = [@example_game_details]
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = similars |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, similars} == RawgEx.get_game_similars(@test_name, "1")
+    end
+  end
+
   # -------------------------------------------------------------------------------
   # Private functions
   # -------------------------------------------------------------------------------
