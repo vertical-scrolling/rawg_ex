@@ -97,6 +97,17 @@ defmodule RawgExTest do
     game_series_count: 5,
     platforms: []
   }
+  @example_reddit_post %{
+    id: 1,
+    name: "name",
+    text: "text",
+    image: "image",
+    url: "url",
+    username: "username",
+    username_url: "username_url",
+    created: "created"
+  }
+
   @example_screenshot %{
     id: 1,
     image: "image",
@@ -423,6 +434,24 @@ defmodule RawgExTest do
          }}
       end do
       assert {:ok, trailers} == RawgEx.get_game_trailers(@test_name, "1")
+    end
+  end
+
+  test "get game reddit posts" do
+    reddit_posts = [@example_reddit_post]
+
+    with_mock Finch, [:passthrough],
+      request: fn _request, _name ->
+        body = reddit_posts |> Jason.encode!()
+
+        {:ok,
+         %Finch.Response{
+           body: body,
+           headers: [],
+           status: 200
+         }}
+      end do
+      assert {:ok, reddit_posts} == RawgEx.get_game_reddit_posts(@test_name, "1")
     end
   end
 

@@ -131,6 +131,16 @@ defmodule RawgEx do
           ]
         }
   @type platform() :: %{}
+  @type reddit_post() :: %{
+          id: integer(),
+          name: String.t(),
+          text: String.t(),
+          image: String.t(),
+          url: String.t(),
+          username: String.t(),
+          username_url: String.t(),
+          created: String.t()
+        }
   @type screenshot() :: %{
           id: integer(),
           image: String.t(),
@@ -360,6 +370,15 @@ defmodule RawgEx do
   @spec get_game_trailers(name :: name(), id :: id()) :: result([trailer()])
   def get_game_trailers(name, id) do
     url = "#{@url_prefix}/games/#{id}/movies"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_game_reddit_posts(name :: name(), id :: id()) :: result([reddit_post()])
+  def get_game_reddit_posts(name, id) do
+    url = "#{@url_prefix}/games/#{id}/reddit"
 
     Finch.build(:get, url)
     |> Finch.request(name)
