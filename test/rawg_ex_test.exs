@@ -122,6 +122,17 @@ defmodule RawgExTest do
     year_start: 2000,
     year_end: 2023
   }
+  @example_platform_details %{
+    id: 1,
+    name: "name",
+    slug: "slug",
+    games_count: 10,
+    image_background: "background",
+    description: "description",
+    image: "image",
+    year_start: 2000,
+    year_end: 2023
+  }
   @example_reddit_post %{
     id: 1,
     name: "name",
