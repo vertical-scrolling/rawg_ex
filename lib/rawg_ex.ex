@@ -221,6 +221,14 @@ defmodule RawgEx do
           store_id: String.t(),
           url: String.t()
         }
+  @type tag() :: %{
+          id: integer(),
+          name: String.t(),
+          language: String.t(),
+          slug: String.t(),
+          image_background: String.t(),
+          games_count: non_neg_integer()
+        }
   @type trailer() :: %{
           id: integer(),
           name: String.t(),
@@ -588,6 +596,16 @@ defmodule RawgEx do
   @spec get_store(name :: name(), id :: id()) :: result(store_details())
   def get_store(name, id) do
     url = "#{@url_prefix}/stores/#{id}"
+
+    Finch.build(:get, url)
+    |> Finch.request(name)
+    |> parse_response()
+  end
+
+  @spec get_tags(name :: name(), opts :: page_opts()) :: result(page(tag()))
+  def get_tags(name, opts \\ []) do
+    query_string = query_string(opts)
+    url = "#{@url_prefix}/tags?#{query_string}"
 
     Finch.build(:get, url)
     |> Finch.request(name)
